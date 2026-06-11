@@ -1,0 +1,244 @@
+import { NodeDefinition } from "@/types";
+
+export const nodeDefinitions: NodeDefinition[] = [
+  // ─── Triggers ──────────────────────────────────────────────────
+  {
+    type: "manual-trigger",
+    label: "Manual Trigger",
+    category: "trigger",
+    description: "Start the flow manually with a click",
+    icon: "Play",
+    color: "#10b981",
+    inputs: 0,
+    outputs: 1,
+    defaultData: { label: "Manual Trigger" },
+  },
+  {
+    type: "webhook-trigger",
+    label: "Webhook Trigger",
+    category: "trigger",
+    description: "Simulate an incoming webhook with custom payload",
+    icon: "Webhook",
+    color: "#10b981",
+    inputs: 0,
+    outputs: 1,
+    defaultData: {
+      label: "Webhook Trigger",
+      method: "POST",
+      path: "/api/webhook",
+      sampleBody: '{"event": "test", "data": {}}',
+    },
+  },
+  {
+    type: "schedule-trigger",
+    label: "Schedule Trigger",
+    category: "trigger",
+    description: "Simulate a scheduled/cron-based trigger",
+    icon: "Clock",
+    color: "#10b981",
+    inputs: 0,
+    outputs: 1,
+    defaultData: {
+      label: "Schedule Trigger",
+      cron: "*/5 * * * *",
+      description: "Every 5 minutes",
+    },
+  },
+
+  // ─── Actions ───────────────────────────────────────────────────
+  {
+    type: "delay",
+    label: "Delay",
+    category: "action",
+    description: "Wait for a specified duration before continuing",
+    icon: "Timer",
+    color: "#f59e0b",
+    inputs: 1,
+    outputs: 1,
+    defaultData: { label: "Delay", duration: 1000 },
+  },
+  {
+    type: "http-request",
+    label: "HTTP Request",
+    category: "action",
+    description: "Mock an HTTP API call with configurable response",
+    icon: "Globe",
+    color: "#f59e0b",
+    inputs: 1,
+    outputs: 1,
+    defaultData: {
+      label: "HTTP Request",
+      method: "GET",
+      url: "https://api.example.com/data",
+      headers: '{"Content-Type": "application/json"}',
+      body: "",
+      mockResponse: '{"status": 200, "data": {"message": "Success"}}',
+      mockStatus: 200,
+      mockDelay: 500,
+    },
+  },
+  {
+    type: "code-block",
+    label: "Code Block",
+    category: "action",
+    description: "Execute custom JavaScript code",
+    icon: "Code",
+    color: "#f59e0b",
+    inputs: 1,
+    outputs: 1,
+    defaultData: {
+      label: "Code Block",
+      code: "// Access input via 'input' variable\n// Return your output\nreturn { processed: true, data: input };",
+    },
+  },
+
+  // ─── Transforms ────────────────────────────────────────────────
+  {
+    type: "json-parser",
+    label: "JSON Parser",
+    category: "transform",
+    description: "Parse JSON strings into objects or stringify objects",
+    icon: "Braces",
+    color: "#8b5cf6",
+    inputs: 1,
+    outputs: 1,
+    defaultData: {
+      label: "JSON Parser",
+      operation: "parse",
+      path: "",
+    },
+  },
+  {
+    type: "text-formatter",
+    label: "Text Formatter",
+    category: "transform",
+    description: "Transform text with templates, case changes, and more",
+    icon: "Type",
+    color: "#8b5cf6",
+    inputs: 1,
+    outputs: 1,
+    defaultData: {
+      label: "Text Formatter",
+      operation: "template",
+      template: "Hello, {{name}}!",
+      caseOp: "uppercase",
+    },
+  },
+  {
+    type: "object-mapper",
+    label: "Object Mapper",
+    category: "transform",
+    description: "Map and reshape object fields using a mapping config",
+    icon: "ArrowRightLeft",
+    color: "#8b5cf6",
+    inputs: 1,
+    outputs: 1,
+    defaultData: {
+      label: "Object Mapper",
+      mapping: '{"name": "user.name", "email": "user.email"}',
+    },
+  },
+  {
+    type: "array-iterator",
+    label: "Array Iterator",
+    category: "transform",
+    description: "Iterate over array items and apply transformations",
+    icon: "List",
+    color: "#8b5cf6",
+    inputs: 1,
+    outputs: 1,
+    defaultData: {
+      label: "Array Iterator",
+      path: "items",
+      operation: "map",
+      expression: "item.toUpperCase()",
+    },
+  },
+
+  // ─── Conditions ────────────────────────────────────────────────
+  {
+    type: "condition",
+    label: "Condition",
+    category: "condition",
+    description: "Branch flow based on a conditional expression",
+    icon: "GitBranch",
+    color: "#ef4444",
+    inputs: 1,
+    outputs: 2,
+    defaultData: {
+      label: "Condition",
+      field: "status",
+      operator: "equals",
+      value: "active",
+      expression: "",
+    },
+  },
+
+  // ─── Outputs ───────────────────────────────────────────────────
+  {
+    type: "local-storage",
+    label: "Local Storage",
+    category: "output",
+    description: "Save data to browser local storage",
+    icon: "Database",
+    color: "#06b6d4",
+    inputs: 1,
+    outputs: 0,
+    defaultData: {
+      label: "Local Storage",
+      key: "enoflow_result",
+      operation: "set",
+    },
+  },
+  {
+    type: "webhook-response",
+    label: "Webhook Response",
+    category: "output",
+    description: "Simulate sending a webhook response",
+    icon: "Send",
+    color: "#06b6d4",
+    inputs: 1,
+    outputs: 0,
+    defaultData: {
+      label: "Webhook Response",
+      statusCode: 200,
+      response: '{"success": true}',
+    },
+  },
+  {
+    type: "notification",
+    label: "Notification",
+    category: "output",
+    description: "Show a browser notification with flow results",
+    icon: "Bell",
+    color: "#06b6d4",
+    inputs: 1,
+    outputs: 0,
+    defaultData: {
+      label: "Notification",
+      title: "Flow Complete",
+      message: "Your workflow has finished executing.",
+      type: "info",
+    },
+  },
+];
+
+export const nodeDefinitionMap = Object.fromEntries(
+  nodeDefinitions.map((d) => [d.type, d])
+);
+
+export const categoryColors: Record<string, string> = {
+  trigger: "#10b981",
+  action: "#f59e0b",
+  transform: "#8b5cf6",
+  condition: "#ef4444",
+  output: "#06b6d4",
+};
+
+export const categoryLabels: Record<string, string> = {
+  trigger: "Triggers",
+  action: "Actions",
+  transform: "Transforms",
+  condition: "Conditions",
+  output: "Outputs",
+};
