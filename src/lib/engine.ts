@@ -384,6 +384,29 @@ export class FlowEngine {
     }
   }
 
+  private activeInputs(node: Node<NodeData>, nodes: Map<string, Node<NodeData>>, edges: Edge[]): Edge[] {
+    return edges.filter(edge => {
+      if (edge.target !== node.id) return false;
+      const parent = this.results.get(edge.source);
+      if (parent?.skipped) return false;
+      if (nodes.get(edge.source)?.data.nodeType === "condition" &&
+          (edge.sourceHandle === "true" || edge.sourceHandle === "false")) {
+        const output = parent?.output as { condition?: boolean } | undefined;
+        return output?.condition === (edge.sourceHandle === "true");
+      }
+      return true;
+    });
+  }
+
+  private recordSkipped(nodeId: string): ExecutionResult {
+    const result: ExecutionResult = {
+      nodeId, output: undefined, skipped: true, duration: 0,
+      timestamp: new Date().toISOString(),
+    };
+    this.results.set(nodeId, result);
+    return result;
+  }
+
   // ── Run full flow ───────────────────────────────────────────────
   async executeFlow(
     nodes: Node<NodeData>[],
@@ -395,12 +418,19 @@ export class FlowEngine {
     this.results.clear();
     this.abortController = new AbortController();
     const sorted = this.topologicalSort(nodes, edges);
+    const nodeMap = new Map(nodes.map(node => [node.id, node]));
 
     for (const node of sorted) {
       if (this.abortController.signal.aborted) break;
 
+      const activeEdges = this.activeInputs(node, nodeMap, edges);
+      if (edges.some(edge => edge.target === node.id) && activeEdges.length === 0) {
+        const result = this.recordSkipped(node.id);
+        onNodeComplete?.(node.id, result);
+        continue;
+      }
       onNodeStart?.(node.id);
-      const input = this.getInputData(node.id, edges);
+      const input = this.getInputData(node.id, activeEdges);
 
       try {
         await this.executeNode(node, input);
@@ -422,9 +452,16 @@ export class FlowEngine {
   ): AsyncGenerator<StepExecution> {
     this.results.clear();
     const sorted = this.topologicalSort(nodes, edges);
+    const nodeMap = new Map(nodes.map(node => [node.id, node]));
 
     for (const node of sorted) {
-      const input = this.getInputData(node.id, edges);
+      const activeEdges = this.activeInputs(node, nodeMap, edges);
+      if (edges.some(edge => edge.target === node.id) && activeEdges.length === 0) {
+        this.recordSkipped(node.id);
+        yield { nodeId: node.id, status: "skipped", input: undefined, output: undefined, duration: 0 };
+        continue;
+      }
+      const input = this.getInputData(node.id, activeEdges);
       const step: StepExecution = {
         nodeId: node.id,
         status: "running",
