@@ -69,7 +69,7 @@ export default function ExecutionPanel() {
                     step.status === "completed" && "border-emerald-500/20 bg-emerald-500/5",
                     step.status === "error" && "border-red-500/20 bg-red-500/5",
                     step.status === "running" && "border-blue-500/20 bg-blue-500/5",
-                    step.status === "pending" && "border-[#313244] bg-[#1e1e2e]",
+                    (step.status === "pending" || step.status === "skipped") && "border-[#313244] bg-[#1e1e2e]",
                     i === currentStepIndex && "ring-1 ring-[#8b5cf6]/50"
                   )}
                 >
@@ -80,6 +80,7 @@ export default function ExecutionPanel() {
                     {step.status === "completed" && <CheckCircle className="w-3 h-3 text-emerald-400 flex-shrink-0" />}
                     {step.status === "error" && <XCircle className="w-3 h-3 text-red-400 flex-shrink-0" />}
                     {step.status === "running" && <Loader2 className="w-3 h-3 text-blue-400 animate-spin flex-shrink-0" />}
+                    {step.status === "skipped" && <span className="text-[10px] text-gray-400">Skipped</span>}
                     {step.status === "pending" && <Clock className="w-3 h-3 text-gray-500 flex-shrink-0" />}
                     <span className="text-[11px] font-medium text-white flex-1 text-left truncate">
                       {node?.data.label || step.nodeId}
@@ -125,7 +126,9 @@ export default function ExecutionPanel() {
                   key={nodeId}
                   className={cn(
                     "rounded-lg border transition-all",
-                    result.error
+                    result.skipped
+                      ? "border-[#313244] bg-[#1e1e2e]"
+                      : result.error
                       ? "border-red-500/20 bg-red-500/5"
                       : "border-emerald-500/20 bg-emerald-500/5"
                   )}
@@ -134,7 +137,9 @@ export default function ExecutionPanel() {
                     onClick={() => setExpandedNode(isExpanded ? null : nodeId)}
                     className="w-full flex items-center gap-2 px-2.5 py-1.5"
                   >
-                    {result.error ? (
+                    {result.skipped ? (
+                      <span className="text-[10px] text-gray-400">Skipped</span>
+                    ) : result.error ? (
                       <XCircle className="w-3 h-3 text-red-400 flex-shrink-0" />
                     ) : (
                       <CheckCircle className="w-3 h-3 text-emerald-400 flex-shrink-0" />
@@ -150,7 +155,9 @@ export default function ExecutionPanel() {
                     <div className="px-2.5 pb-2">
                       <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Output</p>
                       <pre className="text-[10px] text-gray-300 bg-[#11111b] rounded p-1.5 overflow-auto max-h-[120px] font-mono whitespace-pre-wrap break-all">
-                        {result.error
+                        {result.skipped
+                          ? "Inactive condition branch"
+                          : result.error
                           ? `Error: ${result.error}`
                           : JSON.stringify(result.output, null, 2)}
                       </pre>

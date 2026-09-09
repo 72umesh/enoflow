@@ -49,7 +49,7 @@ export default function FlowToolbar() {
         edges as Edge[],
         (nodeId) => setNodeStatus(nodeId, "running"),
         (nodeId, result) => {
-          setNodeStatus(nodeId, "success");
+          setNodeStatus(nodeId, result.skipped ? "skipped" : "success");
           setNodeResult(nodeId, result);
           // Store result in node data for display
           const store = useFlowStore.getState();
@@ -87,7 +87,7 @@ export default function FlowToolbar() {
       for await (const step of engine.executeStepByStep(nodes as Node<NodeData>[], edges as Edge[])) {
         addStepResult(step);
         setCurrentStepIndex(stepIndex);
-        setNodeStatus(step.nodeId, step.status === "completed" ? "success" : step.status === "error" ? "error" : "running");
+        setNodeStatus(step.nodeId, step.status === "skipped" ? "skipped" : step.status === "completed" ? "success" : step.status === "error" ? "error" : "running");
         if (step.output !== undefined) {
           useFlowStore.getState().updateNodeData(step.nodeId, { result: step.output, executionTime: step.duration });
         }

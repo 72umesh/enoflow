@@ -117,7 +117,6 @@ describe("FlowEngine Execution", () => {
   });
 });
 
-
 describe("Code block async execution", () => {
   afterEach(() => vi.useRealTimers());
 
@@ -186,5 +185,102 @@ describe("Code block async execution", () => {
     expect(results.get("code")?.error).toBe("Code block timed out after 5000ms");
     expect(results.get("next")?.output).toBe("done");
     expect(vi.getTimerCount()).toBe(0);
+  });
+});
+
+describe("Condition branch pruning", () => {
+  function node(id: string, nodeType: NodeData["nodeType"], config: Record<string, unknown>): Node<NodeData> {
+    return { id, position: { x: 0, y: 0 }, data: { label: id, nodeType, category: "action", config } };
+  }
+
+  function fixture(condition: boolean) {
+    const nodes = [
+      node("condition", "condition", { expression: String(condition) }),
+      node("yes", "code-block", { code: 'return "yes";' }),
+      node("no", "code-block", { code: 'return "no";' }),
+      node("descendant", "code-block", { code: 'return "descendant";' }),
+      node("join", "code-block", { code: 'return input;' }),
+    ];
+    const edges: Edge[] = [
+      { id: "yes", source: "condition", target: "yes", sourceHandle: "true" },
+      { id: "no", source: "condition", target: "no", sourceHandle: "false" },
+      { id: "descendant", source: "no", target: "descendant" },
+      { id: "join-yes", source: "yes", target: "join" },
+      { id: "join-no", source: "no", target: "join" },
+    ];
+    return { nodes, edges };
+  }
+
+  it.each([true, false])("executes only the active path and rejoins it (%s)", async (condition) => {
+    const { nodes, edges } = fixture(condition);
+    const started: string[] = [];
+    const errors: string[] = [];
+    const engine = new FlowEngine();
+    const results = await engine.executeFlow(nodes, edges, id => started.push(id), undefined, id => errors.push(id));
+    const active = condition ? "yes" : "no";
+    const inactive = condition ? "no" : "yes";
+    expect(started).toContain(active);
+    expect(started).not.toContain(inactive);
+    expect(results.get(inactive)).toMatchObject({ skipped: true, output: undefined, duration: 0 });
+    expect(results.get("join")?.output).toBe(active);
+    if (condition) {
+      expect(started).not.toContain("descendant");
+      expect(results.get("descendant")).toMatchObject({ skipped: true });
+    } else {
+      expect(started).toContain("descendant");
+    }
+    expect(errors).toEqual([]);
+  });
+
+  it.each([true, false])("reports skipped nodes in step mode (%s)", async (condition) => {
+    const { nodes, edges } = fixture(condition);
+    const engine = new FlowEngine();
+    const steps = [];
+    for await (const step of engine.executeStepByStep(nodes, edges)) steps.push(step);
+    const inactive = condition ? "no" : "yes";
+    expect(steps.find(step => step.nodeId === inactive)).toMatchObject({ status: "skipped", output: undefined });
+    expect(steps.find(step => step.nodeId === "join")?.output).toBe(condition ? "yes" : "no");
+    expect(engine.getResults().get(inactive)).toMatchObject({ skipped: true });
+  });
+
+  it("does not invoke code on a skipped branch", async () => {
+    const { nodes, edges } = fixture(true);
+    nodes.find(n => n.id === "no")!.data.config.code = 'throw new Error("inactive side effect");';
+    const errors: string[] = [];
+    await new FlowEngine().executeFlow(nodes, edges, undefined, undefined, (_, error) => errors.push(error));
+    expect(errors).toEqual([]);
+  });
+
+  it("preserves multiple active inputs while removing inactive inputs", async () => {
+    const { nodes, edges } = fixture(true);
+    nodes.push(node("other", "code-block", { code: 'return "other";' }));
+    edges.push({ id: "other-join", source: "other", target: "join" });
+    const results = await new FlowEngine().executeFlow(nodes, edges);
+    expect(results.get("join")?.output).toEqual(["yes", "other"]);
+  });
+
+  it("propagates skipping through nested conditions", async () => {
+    const { nodes, edges } = fixture(true);
+    nodes.find(n => n.id === "no")!.data.nodeType = "condition";
+    nodes.find(n => n.id === "no")!.data.config = { expression: "false" };
+    edges.find(e => e.id === "descendant")!.sourceHandle = "false";
+    const results = await new FlowEngine().executeFlow(nodes, edges);
+    expect(results.get("descendant")).toMatchObject({ skipped: true });
+    expect(results.get("join")?.output).toBe("yes");
+  });
+
+  it("recomputes skipped paths when the same engine runs again", async () => {
+    const engine = new FlowEngine();
+    const { nodes, edges } = fixture(true);
+    const completed: string[] = [];
+    await engine.executeFlow(nodes, edges, undefined, (id, result) => {
+      if (result.skipped) completed.push(id);
+    });
+    expect(completed).toEqual(["no", "descendant"]);
+    nodes[0].data.config.expression = "false";
+    const results = await engine.executeFlow(nodes, edges);
+    expect(results.get("yes")).toMatchObject({ skipped: true });
+    expect(results.get("no")?.skipped).toBeUndefined();
+    expect(results.get("join")?.output).toBe("no");
   });
 });
