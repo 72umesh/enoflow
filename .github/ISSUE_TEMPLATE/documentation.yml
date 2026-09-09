@@ -1,0 +1,25 @@
+name: 📝 Documentation Update
+description: Suggest improvements, report typos, or clarify docs
+title: "[DOCS]: "
+labels: ["documentation", "good first issue"]
+body:
+  - type: textarea
+    id: docs-page
+    attributes:
+      label: Affected Page or File
+      description: Which file or page needs documentation changes? (e.g. README.md, /docs page, CONTRIBUTING.md)
+      placeholder: README.md or src/data/docs.ts
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Description of the Problem / Improvement
+      description: What is unclear, missing, or incorrect?
+    validations:
+      required: true
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested Content
+      description: What should the documentation say instead?

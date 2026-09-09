@@ -1,0 +1,55 @@
+name: 🧩 New Node Proposal
+description: Propose a new workflow node type for EnoFlow
+title: "[NODE]: "
+labels: ["enhancement", "node-proposal", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propose a new node for the visual canvas! See the [How to Add a Node](CONTRIBUTING.md#adding-a-new-node) guide in CONTRIBUTING.md.
+  - type: input
+    id: node-name
+    attributes:
+      label: Node Name
+      placeholder: e.g. Math Operation, CSV Parser, Discord Webhook
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Node Category
+      options:
+        - "trigger"
+        - "action"
+        - "transform"
+        - "condition"
+        - "output"
+    validations:
+      required: true
+  - type: textarea
+    id: node-purpose
+    attributes:
+      label: Purpose & Use Case
+      description: What does this node do and why is it useful in a workflow?
+    validations:
+      required: true
+  - type: textarea
+    id: input-output
+    attributes:
+      label: Expected Inputs & Outputs
+      description: Describe what data the node expects to receive and what data it returns.
+      placeholder: |
+        Input: { a: 10, b: 20, operation: "add" }
+        Output: { result: 30 }
+    validations:
+      required: true
+  - type: dropdown
+    id: ready-to-pr
+    attributes:
+      label: Are you willing to create a PR for this node?
+      options:
+        - "Yes! Please assign this to me."
+        - "I would like guidance from maintainers."
+        - "Open for anyone in the community to pick up."
+    validations:
+      required: true

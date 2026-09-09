@@ -1,0 +1,50 @@
+name: 🐛 Bug Report
+description: Report an issue, unexpected behavior, or crash in EnoFlow
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please check existing issues first to avoid duplicates.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: A clear and concise description of the bug.
+      placeholder: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps or flow configuration to reproduce the behavior.
+      placeholder: |
+        1. Open '/editor'
+        2. Drag node X onto canvas
+        3. Connect to node Y
+        4. Click 'Run Flow'
+        5. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen instead?
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser & OS
+      description: e.g. Chrome 124 on Windows 11 / Firefox on macOS
+      placeholder: Chrome / Windows
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Screenshots, console logs, or exported flow JSON.

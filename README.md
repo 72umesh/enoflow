@@ -1,222 +1,192 @@
 # EnoFlow — Visual Workflow Automation Builder
 
-A lightweight, educational workflow automation builder inspired by tools like n8n, but intentionally simpler, more visual, and easier to understand.
+A lightweight, educational, browser-native workflow automation builder inspired by tools like n8n and Zapier, but intentionally simpler, visual, and zero-server required.
 
-![EnoFlow](https://img.shields.io/badge/EnoFlow-v0.1.0-8b5cf6?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iNiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjIiLz48L3N2Zz4=)
-![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?style=flat-square&logo=tailwindcss)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+[![EnoFlow Version](https://img.shields.io/badge/EnoFlow-v0.1.0-8b5cf6?style=flat-square)](package.json)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.2-black?style=flat-square&logo=next.js)](https://nextjs.org/)
+[![TypeScript 5](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind-4-38bdf8?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![Tests](https://img.shields.io/badge/Tests-Vitest%20passing-brightgreen?style=flat-square)](src/lib/engine.test.ts)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-orange?style=flat-square&logo=buy-me-a-coffee)](https://buymeacoffee.com/enoalph)
 
-## Screenshots
-
-<!-- TODO: Add screenshots -->
-<!-- ![Landing Page](./screenshots/landing.png) -->
-<!-- ![Editor](./screenshots/editor.png) -->
-<!-- ![Templates](./screenshots/templates.png) -->
-<!-- ![Docs](./screenshots/docs.png) -->
+---
 
 ## Overview
 
-EnoFlow lets you build automation workflows visually by dragging nodes onto a canvas and connecting them with edges. Each node represents a step in your workflow — a trigger, action, transform, condition, or output. The entire flow executes in the browser using a built-in JSON-based engine.
+EnoFlow lets you assemble automation workflows visually by dragging nodes onto an interactive canvas and connecting their input/output handles. Each node represents a distinct step in your data pipeline — a trigger, an action, a data transformation, a conditional branch, or a storage output.
 
-**Key differentiators:**
-- 🎓 Educational — teaches automation concepts through visual building
-- 🖥️ Client-side — no server, no AI API, runs entirely in the browser
-- 🧩 14 built-in nodes — triggers, actions, transforms, conditions, outputs
-- 🐛 Step-by-step debugging — inspect data at every stage
-- ✅ Flow validation — catches errors before execution
-- 📦 JSON export/import — save, share, and reload flows
+The entire flow executes **100% in your browser** using an asynchronous Directed Acyclic Graph (DAG) topological sorting engine. No databases, Docker containers, or paid API keys required.
 
-## Features
+```text
+┌─────────────────┐       ┌──────────────────────┐       ┌─────────────────────┐
+│  Manual Trigger │ ────▶ │  Text Formatter Node │ ────▶ │  Notification Node │
+│ (Emits Payload) │       │   (Transforms Data)  │       │  (Displays Result)  │
+└─────────────────┘       └──────────────────────┘       └─────────────────────┘
+                                      │
+                                      ▼
+                          [ Execution & Debug Panel ]
+```
 
-### Visual Flow Builder
-- Drag-and-drop node placement
-- Connect nodes by dragging between handles
-- Animated edges showing data flow direction
-- Minimap for navigation
-- Zoom and pan controls
+### Key Highlights
+* 🎓 **Educational by Design** — Master DAG concepts, node handles, and data pipelines without server setup.
+* 🖥️ **Client-Side Engine** — Runs locally in the browser with real-time step-by-step execution.
+* 🧩 **14 Built-in Nodes** — Covering triggers, mock HTTP requests, code evaluation, string/object transforms, and local storage.
+* 🐛 **Step-by-Step Debugger** — Pause and inspect inputs and outputs at every individual node.
+* ✅ **Real-Time Validation** — Graph linting checks for cycles, missing triggers, and disconnected paths before execution.
+* 📦 **Portability** — Export and import workflows as standard JSON files.
 
-### 14 Built-in Nodes
+---
 
-| Category | Nodes |
-|----------|-------|
-| **Triggers** | Manual Trigger, Webhook Trigger, Schedule Trigger |
-| **Actions** | Delay, HTTP Request, Code Block |
-| **Transforms** | JSON Parser, Text Formatter, Object Mapper, Array Iterator |
-| **Conditions** | Condition (with true/false branches) |
-| **Outputs** | Local Storage, Webhook Response, Notification |
+## 14 Built-in Nodes
 
-### Execution Engine
-- Topological sort ensures correct execution order
-- Full flow execution with real-time status updates
-- Step-by-step mode for debugging
-- Per-node input/output inspection
-- Error handling with visual feedback
+| Category | Icon | Nodes | Description |
+|---|---|---|---|
+| **Triggers** | ⚡ | **Manual Trigger**, **Webhook Trigger**, **Schedule Trigger** | Starts execution on user click, simulated incoming webhook payload, or cron interval. |
+| **Actions** | ⚙️ | **Delay**, **HTTP Request**, **Code Block** | Introduce simulated network delays, mock REST API requests with latency, or execute custom JavaScript. |
+| **Transforms** | 🔄 | **JSON Parser**, **Text Formatter**, **Object Mapper**, **Array Iterator** | Parse/stringify JSON, interpolate string templates, reshape keys, and map/filter array elements. |
+| **Conditions** | 🔀 | **Condition** | Evaluate fields against operators (`equals`, `contains`, `>`, `<`) with separate true/false branches. |
+| **Outputs** | 💾 | **Local Storage**, **Webhook Response**, **Notification** | Persist data to browser localStorage, mock a response payload, or fire web notifications. |
 
-### Flow Management
-- Save flows as JSON files
-- Load flows from JSON files
-- 6 ready-made templates
-- Flow validation with error/warning reporting
+---
 
-### Documentation
-- Comprehensive docs page
-- Explains triggers, actions, transforms, conditions, and outputs
-- Best practices and tips
-- Quick navigation between sections
+## Architecture
 
-## Tech Stack
+EnoFlow is structured around three core architectural layers:
 
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 4
-- **Node Editor**: React Flow (@xyflow/react)
-- **State Management**: Zustand
-- **Icons**: Lucide React
-- **Utilities**: clsx, tailwind-merge
+```text
+               ┌─────────────────────────────────────────┐
+               │          React Flow Canvas UI           │
+               │   (FlowCanvas, NodePalette, Toolbar)    │
+               └────────────────────┬────────────────────┘
+                                    │ Updates
+                                    ▼
+               ┌─────────────────────────────────────────┐
+               │           Zustand State Store           │
+               │  (nodes, edges, executionResults, UI)   │
+               └────────────────────┬────────────────────┘
+                                    │ Dispatches
+                                    ▼
+               ┌─────────────────────────────────────────┐
+               │          FlowEngine (Core)              │
+               │  - Cycle Detection (DFS)                │
+               │  - Topological Sort                     │
+               │  - Node Handler Execution & Isolation   │
+               └─────────────────────────────────────────┘
+```
 
-## Getting Started
+---
+
+## Quickstart
 
 ### Prerequisites
-- Node.js 18+
-- npm, yarn, pnpm, or bun
+* [Node.js](https://nodejs.org/) v18+ (Node 20+ recommended)
+* `npm`, `pnpm`, or `bun`
 
-### Installation
+### Running Locally
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/enoflow.git
-cd enoflow
+# 1. Clone the repository
+git clone https://github.com/AlphaIsYour/youralpha-04-enoflow.git
+cd youralpha-04-enoflow
 
-# Install dependencies
+# 2. Install dependencies
 npm install
 
-# Start development server
+# 3. Start development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser:
+* **Workflow Editor**: [http://localhost:3000/editor](http://localhost:3000/editor)
+* **Pre-built Templates**: [http://localhost:3000/templates](http://localhost:3000/templates)
+* **Documentation**: [http://localhost:3000/docs](http://localhost:3000/docs)
 
 ### Available Scripts
 
 ```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run start    # Start production server
-npm run lint     # Run ESLint
+npm run dev        # Starts Next.js dev server on http://localhost:3000
+npm test           # Runs Vitest unit test suite
+npm run test:watch # Runs Vitest in interactive watch mode
+npm run typecheck  # Validates TypeScript types (tsc --noEmit)
+npm run lint       # Runs ESLint code style analysis
+npm run build      # Produces optimized production build
 ```
 
-## Project Structure
+---
 
-```
-src/
-├── app/
-│   ├── page.tsx              # Landing page
-│   ├── layout.tsx            # Root layout
-│   ├── globals.css           # Global styles
-│   ├── editor/
-│   │   └── page.tsx          # Flow editor page
-│   ├── templates/
-│   │   └── page.tsx          # Templates gallery
-│   └── docs/
-│       └── page.tsx          # Documentation
-├── components/
-│   ├── canvas/
-│   │   ├── FlowCanvas.tsx    # Main canvas component
-│   │   ├── FlowToolbar.tsx   # Editor toolbar
-│   │   ├── NodePalette.tsx   # Node sidebar
-│   │   ├── PropertiesPanel.tsx # Node properties
-│   │   ├── ExecutionPanel.tsx  # Execution results
-│   │   └── ValidationPanel.tsx # Validation results
-│   ├── nodes/
-│   │   └── CustomNode.tsx    # Custom React Flow node
-│   └── edges/
-│       └── CustomEdge.tsx    # Custom React Flow edge
-├── lib/
-│   ├── engine.ts             # Flow execution engine
-│   ├── store.ts              # Zustand state store
-│   ├── node-definitions.ts   # Node type definitions
-│   └── utils.ts              # Utility functions
-├── data/
-│   ├── templates.ts          # Flow templates
-│   └── docs.ts               # Documentation content
-└── types/
-    └── index.ts              # TypeScript type definitions
-```
+## Pre-built Templates
 
-## How It Works
+EnoFlow ships with 6 ready-to-use workflow templates:
+1. **Hello World** — Fundamental trigger &rarr; notification pipeline.
+2. **Webhook Processor** — Simulate parsing incoming webhook payloads, branching, and responding.
+3. **Data Pipeline** — Fetch API &rarr; JSON parse &rarr; Object map &rarr; save to Local Storage.
+4. **Text Transform Chain** — Multi-step string case conversion, trimming, and templating.
+5. **Scheduled Report** — Simulate interval cron-based trigger emitting periodic digests.
+6. **Array Processing** — Array mapping, filtering, and aggregation.
 
-1. **Build** — Drag nodes from the palette onto the canvas. Connect outputs to inputs.
-2. **Configure** — Click any node to configure its settings (URLs, code, conditions, etc.).
-3. **Execute** — Run the full flow or step through it one node at a time.
-4. **Inspect** — View execution results, input/output data, and error messages.
-
-## Templates
-
-EnoFlow includes 6 pre-built templates:
-
-- **Hello World** — Simplest flow: trigger → notification
-- **Webhook Processor** — Parse webhook data, check conditions, respond
-- **Data Pipeline** — Fetch → parse → transform → store
-- **Text Transform Chain** — Multiple text transformations
-- **Scheduled Report** — Simulate scheduled job with report generation
-- **Array Processing** — Demonstrate array map/filter operations
-
-## Deployment
-
-### Vercel (Recommended)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-```
-
-Or connect your GitHub repository to [Vercel](https://vercel.com) for automatic deployments.
-
-### Other Platforms
-
-EnoFlow is a standard Next.js app and can be deployed to any platform that supports Node.js:
-- Netlify
-- AWS Amplify
-- Railway
-- Render
-- Self-hosted with `npm run build && npm start`
+---
 
 ## Roadmap
 
-- [ ] Custom node types (user-defined)
-- [ ] Subflows and flow composition
-- [ ] Variable store and secrets management
-- [ ] Real webhook endpoint integration
-- [ ] Flow versioning and history
-- [ ] Collaborative editing
-- [ ] Plugin system for third-party nodes
-- [ ] Mobile-responsive editor
-- [ ] Dark/light theme toggle
-- [ ] Flow analytics and monitoring
+### Phase 1: Engine Foundation & Quality (Completed / Current)
+- [x] Visual graph canvas powered by `@xyflow/react`.
+- [x] 14 core nodes spanning triggers, transforms, and outputs.
+- [x] Step-by-step interactive debugger and JSON inspector.
+- [x] Automated unit test suite with Vitest.
+- [x] Continuous Integration workflow with GitHub Actions.
+
+### Phase 2: Engine Resilience & Branching (In Progress)
+- [ ] Fix condition node branching to prune inactive paths.
+- [ ] Support asynchronous code execution and Promise resolution in Code Block nodes.
+- [ ] One-click copy formatted JSON button in the execution drawer.
+- [ ] Interactive canvas empty-state guide for first-time visitors.
+
+### Phase 3: Node Ecosystem Expansion (Help Wanted)
+- [ ] **Math / Calculator Node** (`+`, `-`, `*`, `/`, modulo, rounding).
+- [ ] **CSV to JSON Node** with custom delimiter and header detection.
+- [ ] **Date / Timestamp Node** for parsing and formatting UNIX/ISO dates.
+- [ ] **Regex Extractor Node** for pattern matching text inputs.
+
+### Phase 4: Power User Features (Future)
+- [ ] Keyboard shortcut navigation (`Ctrl+Enter` to run, `Del` to delete).
+- [ ] Subflow grouping and re-usable flow modules.
+- [ ] Flow undo / redo history stack.
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+We love contributions! Whether you are interested in creating a brand-new workflow node, writing tests, improving documentation, or fixing engine bugs, your input is deeply appreciated.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+* 📖 Read our **[Contribution Guide](CONTRIBUTING.md)** for local development setup, coding standards, and how to add a new node type in 4 simple steps.
+* 🏷️ Looking for a place to start? Check out our **[`good first issue`](https://github.com/AlphaIsYour/youralpha-04-enoflow/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)** list or explore the [curated candidate issues](.github/candidate-issues/README.md).
+* 📜 Review our **[Code of Conduct](.github/CODE_OF_CONDUCT.md)** to keep our community inclusive and welcoming.
+
+---
+
+## Contributors
+
+Thanks to everyone who has helped build and improve EnoFlow!
+
+<!-- All contributors will be listed here upon merged contributions -->
+* [@AlphaIsYour](https://github.com/AlphaIsYour) (Maintainer)
+
+*(Your name can be here! Check out [CONTRIBUTING.md](CONTRIBUTING.md) to make your first contribution).*
+
+---
+
+## Supporting EnoFlow
+
+If you find EnoFlow useful for learning visual programming or building automation workflows, you can optionally support its development:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20EnoFlow-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://buymeacoffee.com/enoalph)
+
+Your support helps keep the project maintained, documented, and free for everyone.
+
+---
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [React Flow](https://reactflow.dev/) — The node editor library
-- [n8n](https://n8n.io/) — Inspiration for workflow automation
-- [Next.js](https://nextjs.org/) — The React framework
-- [Tailwind CSS](https://tailwindcss.com/) — Utility-first CSS
-- [Lucide](https://lucide.dev/) — Beautiful icons
+This project is licensed under the [MIT License](LICENSE).
