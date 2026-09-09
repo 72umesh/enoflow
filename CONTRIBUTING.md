@@ -28,7 +28,7 @@ This project adheres to the [Contributor Covenant](.github/CODE_OF_CONDUCT.md). 
 
 ## Finding Something to Work On
 
-We welcome contributions of all sizes! Browse our [Issues](https://github.com/AlphaIsYour/youralpha-04-enoflow/issues) to find tasks:
+We welcome contributions of all sizes! Browse our [Issues](https://github.com/AlphaIsYour/enoflow/issues) to find tasks:
 
 * **`good first issue`**: Perfect for newcomers! These tasks are well-scoped, have defined boundaries, and can usually be completed in a few hours.
 * **`help wanted`**: Problems or enhancements where community assistance is actively needed.
@@ -61,8 +61,8 @@ We believe in supporting contributors from their very first PR to long-term owne
 1. **Fork the repository** on GitHub.
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/youralpha-04-enoflow.git
-   cd youralpha-04-enoflow
+   git clone https://github.com/YOUR_USERNAME/enoflow.git
+   cd enoflow
    ```
 3. **Install dependencies**:
    ```bash
@@ -210,7 +210,7 @@ npm run build
 ## Community & Questions
 
 Have a question, idea, or need help?
-* Open a discussion in [GitHub Discussions](https://github.com/AlphaIsYour/youralpha-04-enoflow/discussions).
+* Open a discussion in [GitHub Discussions](https://github.com/AlphaIsYour/enoflow/discussions).
 * Ask in the relevant issue thread.
 
 Happy automating! 🚀

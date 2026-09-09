@@ -88,8 +88,8 @@ EnoFlow is structured around three core architectural layers:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/AlphaIsYour/youralpha-04-enoflow.git
-cd youralpha-04-enoflow
+git clone https://github.com/AlphaIsYour/enoflow.git
+cd enoflow
 
 # 2. Install dependencies
 npm install
@@ -161,7 +161,7 @@ EnoFlow ships with 6 ready-to-use workflow templates:
 We love contributions! Whether you are interested in creating a brand-new workflow node, writing tests, improving documentation, or fixing engine bugs, your input is deeply appreciated.
 
 * 📖 Read our **[Contribution Guide](CONTRIBUTING.md)** for local development setup, coding standards, and how to add a new node type in 4 simple steps.
-* 🏷️ Looking for a place to start? Check out our **[`good first issue`](https://github.com/AlphaIsYour/youralpha-04-enoflow/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)** list or explore the [curated candidate issues](.github/candidate-issues/README.md).
+* 🏷️ Looking for a place to start? Check out our **[`good first issue`](https://github.com/AlphaIsYour/enoflow/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)** list or explore the [curated candidate issues](.github/candidate-issues/README.md).
 * 📜 Review our **[Code of Conduct](.github/CODE_OF_CONDUCT.md)** to keep our community inclusive and welcoming.
 
 ---
