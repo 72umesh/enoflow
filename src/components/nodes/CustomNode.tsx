@@ -25,6 +25,7 @@ function CustomNode({ data, selected }: NodeProps) {
 
   const statusIcon = {
     idle: null,
+    skipped: <span className="text-[10px] text-gray-400">Skipped</span>,
     running: <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-400" />,
     success: <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />,
     error: <XCircle className="w-3.5 h-3.5 text-red-400" />,
@@ -32,6 +33,7 @@ function CustomNode({ data, selected }: NodeProps) {
 
   const statusBorder = {
     idle: "",
+    skipped: "opacity-50",
     running: "ring-2 ring-blue-400/50",
     success: "ring-2 ring-emerald-400/50",
     error: "ring-2 ring-red-400/50",
