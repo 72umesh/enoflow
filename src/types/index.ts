@@ -19,7 +19,7 @@ export interface NodeData {
   category: NodeCategory;
   config: Record<string, unknown>;
   result?: unknown;
-  status?: 'idle' | 'running' | 'success' | 'error';
+  status?: 'idle' | 'running' | 'success' | 'error' | 'skipped';
   error?: string;
   executionTime?: number;
   [key: string]: unknown;
@@ -66,6 +66,7 @@ export interface ExecutionContext {
 }
 
 export interface ExecutionResult {
+  skipped?: boolean;
   nodeId: string;
   output: unknown;
   error?: string;
@@ -85,7 +86,7 @@ export interface FlowExecution {
 
 export interface StepExecution {
   nodeId: string;
-  status: 'pending' | 'running' | 'completed' | 'error';
+  status: 'pending' | 'running' | 'completed' | 'error' | 'skipped';
   input: unknown;
   output: unknown;
   error?: string;
