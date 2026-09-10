@@ -173,6 +173,7 @@ Thanks to everyone who has helped build and improve EnoFlow!
 <!-- All contributors will be listed here upon merged contributions -->
 * [@AlphaIsYour](https://github.com/AlphaIsYour) (Maintainer)
 * [@mikevillari](https://github.com/mikevillari) — Fixed asynchronous code block execution (#9) and condition branch pruning (#10)
+* [@72umesh](https://github.com/72umesh) — Added interactive empty-state onboarding guide on Canvas (#11)
 
 *(Your name can be here! Check out [CONTRIBUTING.md](CONTRIBUTING.md) to make your first contribution).*
 
