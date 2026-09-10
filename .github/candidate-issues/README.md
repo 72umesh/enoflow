@@ -12,3 +12,4 @@ This directory contains curated, production-ready issues ready to be opened on G
 | 06 | [Implement Math / Calculator transformation node](./06-math-operation-node.md) | Feature (Node) | Intermediate | No |
 | 07 | [Implement CSV to JSON conversion transform node](./07-csv-json-converter-node.md) | Feature (Node) | Intermediate | No |
 | 08 | [Add keyboard shortcuts for Run, Step, and Delete](./08-keyboard-shortcuts.md) | Feature (DX) | Intermediate | No |
+| 09 | [Implement Undo / Redo history state for workflow canvas](./09-undo-redo-history.md) | Feature (State) | Intermediate | No |
