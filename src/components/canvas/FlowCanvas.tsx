@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, DragEvent } from "react";
+import { useRouter } from "next/navigation";
 import {
   ReactFlow,
   Background,
@@ -12,6 +13,7 @@ import {
   Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Sparkles, Play } from "lucide-react";
 
 import { useFlowStore } from "@/lib/store";
 import { nodeDefinitionMap } from "@/lib/node-definitions";
@@ -23,13 +25,21 @@ import CustomEdge from "@/components/edges/CustomEdge";
 const nodeTypes = { custom: CustomNode };
 const edgeTypes = { custom: CustomEdge };
 
+const triggerDef = nodeDefinitionMap["manual-trigger"];
+
 function FlowCanvasInner() {
   const {
-    nodes, edges, onNodesChange, onEdgesChange, onConnect,
-    addNode, selectNode,
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    addNode,
+    selectNode,
   } = useFlowStore();
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { screenToFlowPosition } = useReactFlow();
+  const router = useRouter();
 
   const onDragOver = useCallback((event: DragEvent) => {
     event.preventDefault();
@@ -65,22 +75,60 @@ function FlowCanvasInner() {
 
       addNode(newNode);
     },
-    [screenToFlowPosition, addNode]
+    [screenToFlowPosition, addNode],
   );
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node<NodeData>) => {
       selectNode(node.id);
     },
-    [selectNode]
+    [selectNode],
   );
 
   const onPaneClick = useCallback(() => {
     selectNode(null);
   }, [selectNode]);
 
+  const handleAddManualTrigger = useCallback(() => {
+    if (!triggerDef) return;
+
+    const wrapper = reactFlowWrapper.current;
+    const screenAlignCenter = wrapper
+      ? {
+          x: wrapper.getBoundingClientRect().left + wrapper.clientWidth / 2,
+          y: wrapper.getBoundingClientRect().top + wrapper.clientHeight / 2,
+        }
+      : { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+    const position = screenToFlowPosition(screenAlignCenter);
+
+    const newNodeId = `node-${generateId()}`;
+    const newNode: Node<NodeData> = {
+      id: newNodeId,
+      type: "custom",
+      position: {
+        x: position.x - 110,
+        y: position.y - 40,
+      },
+      data: {
+        label: triggerDef.label,
+        nodeType: triggerDef.type,
+        category: triggerDef.category,
+        config: { ...triggerDef.defaultData },
+        status: "idle",
+      },
+    };
+
+    addNode(newNode);
+    selectNode(newNodeId);
+  }, [screenToFlowPosition, addNode, selectNode]);
+
+  const handleBrowseTemplates = useCallback(() => {
+    router.push("/templates");
+  }, [router]);
+
   return (
-    <div ref={reactFlowWrapper} className="flex-1 h-full">
+    <div ref={reactFlowWrapper} className="flex-1 h-full relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -127,6 +175,43 @@ function FlowCanvasInner() {
           style={{ background: "#181825" }}
         />
       </ReactFlow>
+
+      {nodes.length === 0 && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+          <div
+            onDragOver={onDragOver}
+            onDrop={onDrop}
+            className="bg-[#181825]/95 border border-[#313244] rounded-2xl p-6 max-w-sm text-center backdrop-blur shadow-2xl pointer-events-auto"
+          >
+            <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-semibold text-white mb-1">
+              Start Your Workflow
+            </h3>
+            <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+              Drag a Trigger node from the left panel onto the canvas, or start
+              from a template.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <button
+                onClick={handleAddManualTrigger}
+                className="text-xs font-medium text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-3.5 py-2 transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-violet-600/20"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                Add Manual Trigger
+              </button>
+              <button
+                onClick={handleBrowseTemplates}
+                className="text-xs font-medium text-gray-300 hover:text-white border border-[#313244] hover:border-[#45475a] bg-[#1e1e2e]/50 hover:bg-[#313244] rounded-lg px-3.5 py-2 transition-colors"
+              >
+                Browse Templates
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
