@@ -13,6 +13,7 @@ import {
   Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { Sparkles, Play } from "lucide-react";
 
 import { useFlowStore } from "@/lib/store";
 import { nodeDefinitionMap } from "@/lib/node-definitions";
@@ -101,10 +102,14 @@ function FlowCanvasInner() {
 
     const position = screenToFlowPosition(screenAlignCenter);
 
+    const newNodeId = `node-${generateId()}`;
     const newNode: Node<NodeData> = {
-      id: `node-${generateId()}`,
+      id: newNodeId,
       type: "custom",
-      position,
+      position: {
+        x: position.x - 110,
+        y: position.y - 40,
+      },
       data: {
         label: triggerDef.label,
         nodeType: triggerDef.type,
@@ -115,14 +120,15 @@ function FlowCanvasInner() {
     };
 
     addNode(newNode);
-  }, [screenToFlowPosition, addNode]);
+    selectNode(newNodeId);
+  }, [screenToFlowPosition, addNode, selectNode]);
 
   const handleBrowseTemplates = useCallback(() => {
     router.push("/templates");
   }, [router]);
 
   return (
-    <div ref={reactFlowWrapper} className="flex-1 h-full">
+    <div ref={reactFlowWrapper} className="flex-1 h-full relative">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -172,11 +178,18 @@ function FlowCanvasInner() {
 
       {nodes.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <div className="bg-[#181825]/90 border border-[#313244] rounded-2xl p-6 max-w-sm text-center backdrop-blur shadow-2xl pointer-events-auto">
+          <div
+            onDragOver={onDragOver}
+            onDrop={onDrop}
+            className="bg-[#181825]/95 border border-[#313244] rounded-2xl p-6 max-w-sm text-center backdrop-blur shadow-2xl pointer-events-auto"
+          >
+            <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+              <Sparkles className="w-5 h-5" />
+            </div>
             <h3 className="text-base font-semibold text-white mb-1">
               Start Your Workflow
             </h3>
-            <p className="text-xs text-gray-400 mb-4">
+            <p className="text-xs text-gray-400 mb-4 leading-relaxed">
               Drag a Trigger node from the left panel onto the canvas, or start
               from a template.
             </p>
@@ -184,13 +197,14 @@ function FlowCanvasInner() {
             <div className="flex flex-col sm:flex-row gap-2 justify-center">
               <button
                 onClick={handleAddManualTrigger}
-                className="text-xs font-medium text-white bg-[#313244] hover:bg-[#45475a] rounded-lg px-3 py-2 transition-colors"
+                className="text-xs font-medium text-white bg-violet-600 hover:bg-violet-500 rounded-lg px-3.5 py-2 transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-violet-600/20"
               >
+                <Play className="w-3.5 h-3.5 fill-current" />
                 Add Manual Trigger
               </button>
               <button
                 onClick={handleBrowseTemplates}
-                className="text-xs font-medium text-white border border-[#45475a] bg-transparent hover:bg-[#313244] rounded-lg px-3 py-2 transition-colors"
+                className="text-xs font-medium text-gray-300 hover:text-white border border-[#313244] hover:border-[#45475a] bg-[#1e1e2e]/50 hover:bg-[#313244] rounded-lg px-3.5 py-2 transition-colors"
               >
                 Browse Templates
               </button>
