@@ -4,9 +4,49 @@ import { useFlowStore } from "@/lib/store";
 import { formatDuration, cn } from "@/lib/utils";
 import {
   X, CheckCircle, XCircle, Clock, ChevronRight, ChevronDown,
-  Loader2, Trash2, Footprints,
+  Loader2, Trash2, Footprints, Copy, Check,
 } from "lucide-react";
 import { useState } from "react";
+
+function CopyJsonButton({ data }: { data: unknown }) {
+  const [copied, setCopied] = useState(false);
+
+  if (data === undefined || data === null) return null;
+
+  const textToCopy = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // ignore clipboard error
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      type="button"
+      className="inline-flex items-center gap-1 text-[10px] text-gray-400 hover:text-white px-1.5 py-0.5 rounded hover:bg-[#313244] transition-colors"
+      title={copied ? "Copied!" : "Copy JSON"}
+    >
+      {copied ? (
+        <>
+          <Check className="w-2.5 h-2.5 text-emerald-400" />
+          <span className="text-emerald-400 text-[9px] font-medium">Copied!</span>
+        </>
+      ) : (
+        <>
+          <Copy className="w-2.5 h-2.5" />
+          <span className="text-[9px]">Copy</span>
+        </>
+      )}
+    </button>
+  );
+}
 
 export default function ExecutionPanel() {
   const {
@@ -92,13 +132,19 @@ export default function ExecutionPanel() {
                   {isExpanded && (
                     <div className="px-2.5 pb-2 space-y-2">
                       <div>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Input</p>
+                        <div className="flex items-center justify-between mb-0.5">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider">Input</p>
+                          <CopyJsonButton data={step.input} />
+                        </div>
                         <pre className="text-[10px] text-gray-300 bg-[#11111b] rounded p-1.5 overflow-auto max-h-[80px] font-mono whitespace-pre-wrap break-all">
                           {step.input !== undefined ? JSON.stringify(step.input, null, 2) : "(none)"}
                         </pre>
                       </div>
                       <div>
-                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Output</p>
+                        <div className="flex items-center justify-between mb-0.5">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider">Output</p>
+                          <CopyJsonButton data={step.output} />
+                        </div>
                         <pre className="text-[10px] text-gray-300 bg-[#11111b] rounded p-1.5 overflow-auto max-h-[80px] font-mono whitespace-pre-wrap break-all">
                           {step.output !== undefined ? JSON.stringify(step.output, null, 2) : "(none)"}
                         </pre>
@@ -153,7 +199,10 @@ export default function ExecutionPanel() {
 
                   {isExpanded && (
                     <div className="px-2.5 pb-2">
-                      <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Output</p>
+                      <div className="flex items-center justify-between mb-0.5">
+                        <p className="text-[10px] text-gray-500 uppercase tracking-wider">Output</p>
+                        {!result.skipped && !result.error && <CopyJsonButton data={result.output} />}
+                      </div>
                       <pre className="text-[10px] text-gray-300 bg-[#11111b] rounded p-1.5 overflow-auto max-h-[120px] font-mono whitespace-pre-wrap break-all">
                         {result.skipped
                           ? "Inactive condition branch"
