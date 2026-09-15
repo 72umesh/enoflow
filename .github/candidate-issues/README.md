@@ -13,3 +13,9 @@ This directory contains curated, production-ready issues ready to be opened on G
 | 07 | [Implement CSV to JSON conversion transform node](./07-csv-json-converter-node.md) | Feature (Node) | Intermediate | No |
 | 08 | [Add keyboard shortcuts for Run, Step, and Delete](./08-keyboard-shortcuts.md) | Feature (DX) | Intermediate | No |
 | 09 | [Implement Undo / Redo history state for workflow canvas](./09-undo-redo-history.md) | Feature (State) | Intermediate | No |
+| 10 | [Add floating Zoom Controls with percentage display and quick presets](./10-canvas-zoom-presets.md) | UI/UX | Beginner | **Yes** |
+| 11 | [Implement Regex / Text Extractor transformation node](./11-regex-extractor-node.md) | Feature (Node) | Intermediate | No |
+| 12 | [Implement Array Utility transformation node (Slice, Sort, Unique, Limit)](./12-array-utilities-node.md) | Feature (Node) | Intermediate | **Yes** |
+| 13 | [Add Light and Dark theme toggle with persistence](./13-theme-toggle-light-dark.md) | UI/UX | Intermediate | No |
+| 14 | [Implement Mock Data / Generator node (UUID, Random, Mock User)](./14-data-generator-mock-node.md) | Feature (Node) | Beginner | **Yes** |
+| 15 | [Add Export Execution Run Log to JSON in ExecutionPanel](./15-export-execution-run-logs.md) | Feature / DX | Beginner | **Yes** |
