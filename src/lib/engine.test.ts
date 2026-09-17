@@ -284,3 +284,156 @@ describe("Condition branch pruning", () => {
     expect(results.get("join")?.output).toBe("no");
   });
 });
+
+describe("Math Operations", () => {
+  function codeNode(code: string, id = "input"): Node<NodeData> {
+    return { id, position: {x: 0, y: 0}, data:{ label:id, nodeType: "code-block", category: "action", config: {code}}};
+  }
+
+  function mathNode( config: Record<string, unknown>,id = "math"): Node<NodeData> {
+    return { id, position: { x: 200, y: 0 }, data: { label: "Math Operation", nodeType: "math-operation", category: "transform", config,},};
+  }
+
+  function mathFlow( inputCode: string, config: Record<string, unknown>) {
+    const nodes = [ codeNode(inputCode), mathNode(config),];
+
+    const edges: Edge[] = [
+      { id: "input-to-math", source: "input", target: "math", },
+    ];
+
+    return { nodes, edges };
+  }
+
+  it.each([
+    ["add", 20, 10, 30],
+    ["subtract", 20, 5, 15],
+    ["multiply", 20, 5, 100],
+    ["divide", 20, 5, 4],
+    ["modulo", 20, 6, 2],
+  ])( 
+    "performs %s correctly",
+      async (operation, input, operand, expected) => {
+        const engine = new FlowEngine();
+
+        const { nodes, edges } = mathFlow(
+          `return ${input};`,
+          {
+            operation,
+            operand,
+          }
+        );
+
+        const results = await engine.executeFlow(nodes, edges);
+
+        expect(results.get("math")?.output).toBe(expected);
+        expect(results.get("math")?.error).toBeUndefined();
+      }
+    );
+  
+  it.each([
+    ["round", 10.6, 11],
+    ["floor", 10.6, 10],
+    ["ceil", 10.2, 11],
+  ])(
+    "performs %s correctly",
+    async (operation, input, expected) => {
+      const engine = new FlowEngine();
+
+      const { nodes, edges } = mathFlow(
+        `return ${input};`,
+        {
+          operation,
+          operand: 10,
+        }
+      );
+
+      const results = await engine.executeFlow(nodes, edges);
+
+      expect(results.get("math")?.output).toBe(expected);
+      expect(results.get("math")?.error).toBeUndefined();
+    }
+  );
+
+  it("update a nested object value using a dot path", async () => {
+    const engine = new FlowEngine();
+
+    const { nodes, edges } = mathFlow(
+      `return {
+        order: {
+          total: 100
+        },
+        customer: "Umesh"
+      };`,
+      {
+        operation: "add",
+        operand: 50,
+        path: "order.total",
+      }
+    );
+
+    const results = await engine.executeFlow(nodes, edges);
+
+    expect(results.get("math")?.output).toEqual({
+      order: {
+        total: 150,
+      },
+      customer: "Umesh",
+    });
+  });
+
+  it("records an error when dividing by zero", async () => {
+    const engine = new FlowEngine();
+
+    const { nodes, edges } = mathFlow(
+      "return 20;",
+      {
+        operation: "divide",
+        operand: 0,
+      }
+    );
+
+    const results = await engine.executeFlow(nodes, edges);
+
+    expect(results.get("math")?.output).toBeUndefined();
+    expect(results.get("math")?.error).toBe("Cannot divide by zero");
+  });
+
+  it("records an error when calculating modulo by zero", async () => {
+    const engine = new FlowEngine();
+
+    const { nodes, edges } = mathFlow(
+      "return 20;",
+      {
+        operation: "modulo",
+        operand: 0,
+      }
+    );
+
+    const results = await engine.executeFlow(nodes, edges);
+
+    expect(results.get("math")?.output).toBeUndefined();
+    expect(results.get("math")?.error).toBe(
+      "Cannot perform modulo by zero"
+    );
+  });
+
+  it("records an error when the input is not a number", async () => {
+    const engine = new FlowEngine();
+
+    const { nodes, edges } = mathFlow(
+      `return "hello";`,
+      {
+        operation: "add",
+        operand: 10,
+      }
+    );
+
+    const results = await engine.executeFlow(nodes, edges);
+
+    expect(results.get("math")?.output).toBeUndefined();
+    expect(results.get("math")?.error).toContain(
+      "Math operation requires a valid number"
+    );
+   });
+  
+})

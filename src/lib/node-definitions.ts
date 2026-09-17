@@ -154,6 +154,21 @@ export const nodeDefinitions: NodeDefinition[] = [
       expression: "item.toUpperCase()",
     },
   },
+  {
+  type: "math-operation",
+  label: "Math Operation",
+  category: "transform",
+  description: "Perform arithmetic calculations on numbers",
+  icon: "Calculator",
+  color: "#8b5cf6",
+  inputs: 1,
+  outputs: 1,
+  defaultData: {
+    label: "Math Operation",
+    operation: "add",
+    operand: 10,
+  },
+ },
 
   // ─── Conditions ────────────────────────────────────────────────
   {
