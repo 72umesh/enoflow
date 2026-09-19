@@ -19,3 +19,9 @@ This directory contains curated, production-ready issues ready to be opened on G
 | 13 | [Add Light and Dark theme toggle with persistence](./13-theme-toggle-light-dark.md) | UI/UX | Intermediate | No |
 | 14 | [Implement Mock Data / Generator node (UUID, Random, Mock User)](./14-data-generator-mock-node.md) | Feature (Node) | Beginner | **Yes** |
 | 15 | [Add Export Execution Run Log to JSON in ExecutionPanel](./15-export-execution-run-logs.md) | Feature / DX | Beginner | **Yes** |
+| 16 | [Add Duplicate / Clone node action via keyboard shortcut and context menu](./16-duplicate-node-action.md) | Feature (DX) | Beginner | **Yes** |
+| 17 | [Implement Base64 Encode / Decode transformation node](./17-base64-transform-node.md) | Feature (Node) | Beginner | **Yes** |
+| 18 | [Add Node Search and Filter in Node Palette sidebar](./18-palette-search-filter.md) | UI/UX | Beginner | **Yes** |
+| 19 | [Implement Sleep / Delay countdown indicator during live execution](./19-delay-countdown-timer.md) | Feature (Engine) | Intermediate | No |
+| 20 | [Add Workflow Template Preview Modal in Templates Page](./20-template-preview-modal.md) | UI/UX | Intermediate | **Yes** |
+| 21 | [Add integration tests for complete multi-step workflow execution in Vitest](./21-workflow-integration-tests.md) | Testing | Beginner | **Yes** |
