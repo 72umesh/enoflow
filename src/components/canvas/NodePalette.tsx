@@ -5,12 +5,13 @@ import { nodeDefinitions, categoryColors, categoryLabels } from "@/lib/node-defi
 import {
   Play, Webhook, Clock, Timer, Globe, Code, Braces, Type,
   ArrowRightLeft, List, GitBranch, Database, Send, Bell,
-  Search, GripVertical,
+  Search, GripVertical, FileSpreadsheet, Calculator,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
   Play, Webhook, Clock, Timer, Globe, Code, Braces, Type,
   ArrowRightLeft, List, GitBranch, Database, Send, Bell,
+  FileSpreadsheet, Calculator,
 };
 
 export default function NodePalette() {

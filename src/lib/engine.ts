@@ -365,6 +365,145 @@ export class FlowEngine {
           break;
         }
 
+        case "math-operation":{
+          const {
+            operation ="add",
+            operand = 10,
+            path ="",
+          } = config as {
+            operation?: string;
+            operand?:number;
+            path?:string;
+          }
+
+          const getValueAtPath = (source: unknown, objectPath: string): unknown =>{
+            
+            if(!objectPath){
+              return source;
+            }
+
+            return objectPath.split(".").reduce<unknown>((current, key) =>{
+              if(
+                current !== null && 
+                typeof current === "object" &&
+                key in current
+              ){
+                return (current as Record<string, unknown>)[key];
+              }
+
+              return undefined;
+            }, source)
+          }
+
+          const setValueAtPath = (
+            source: Record<string, unknown>, 
+            objectPath: string, 
+            value:number) : Record<string,unknown> => {
+
+          const keys = objectPath.split(".");
+          const result: Record<string,unknown> = { ...source };
+
+          let current: Record<string, unknown> = result;
+
+          for (let i = 0; i < keys.length - 1; i++) {
+            const key = keys[i];
+            const existingValue = current[key];
+
+            current[key] =
+              existingValue &&
+              typeof existingValue === "object" &&
+              !Array.isArray(existingValue)
+                ? { ...(existingValue as Record<string, unknown>) }
+                : {};
+
+            current = current[key] as Record<string, unknown>;
+          }
+
+          current[keys[keys.length - 1]] = value;
+
+          return result;
+          };
+
+          const inputValue = getValueAtPath(input, path);
+
+          if (typeof inputValue !== "number" || Number.isNaN(inputValue)) {
+            throw new Error(
+              `Math operation requires a valid number, but received: ${String(inputValue)}`
+            );
+          }
+          if (typeof operand !== "number" || Number.isNaN(operand)) {
+            throw new Error(
+              `Math operation requires a valid numeric operand, but received: ${String(operand)}`
+            );
+          }
+
+          let calculatedValue: number;
+
+          switch(operation){
+            case "add":
+              calculatedValue = inputValue + operand;
+              break;
+
+            case "subtract":
+              calculatedValue = inputValue - operand;
+              break;
+
+            case "multiply":
+              calculatedValue = inputValue * operand;
+              break;
+
+            case "divide":
+              if (operand === 0) {
+                throw new Error("Cannot divide by zero");
+              }
+              calculatedValue = inputValue / operand;
+              break;
+            case "modulo":
+              if (operand === 0) {
+                throw new Error("Cannot perform modulo by zero");
+              }
+              calculatedValue = inputValue % operand;
+              break;
+              
+            case "round":
+              calculatedValue = Math.round(inputValue);
+              break;
+
+            case "floor":
+              calculatedValue = Math.floor(inputValue);
+              break;
+
+            case "ceil":
+              calculatedValue = Math.ceil(inputValue);
+              break;
+            
+            default:
+              throw new Error(`Unsupported math operations: ${operation}`);
+          }
+
+        if(!path){
+          output = calculatedValue;
+          break;
+        }
+
+        if (
+          input === null ||
+          typeof input !== "object" ||
+          Array.isArray(input)
+        ) {
+          throw new Error(
+            "Object path can only be used with an object input"
+          );
+        }
+
+        output = setValueAtPath(
+          input as Record<string, unknown>,
+          path,
+          calculatedValue
+        );
+        break;
+        }
+
         // ── Conditions ──
         case "condition": {
           const inputObj = (typeof input === "object" && input !== null ? input : {}) as Record<string, unknown>;

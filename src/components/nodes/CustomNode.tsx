@@ -9,13 +9,13 @@ import {
   Play, Webhook, Clock, Timer, Globe, Code, Braces, Type,
   ArrowRightLeft, List, GitBranch, Database, Send, Bell,
   CheckCircle, XCircle, Loader2, ChevronDown, ChevronUp,
-  FileSpreadsheet,
+  FileSpreadsheet, Calculator,
 } from "lucide-react";
 
 const iconMap: Record<string, React.ElementType> = {
   Play, Webhook, Clock, Timer, Globe, Code, Braces, Type,
   ArrowRightLeft, List, GitBranch, Database, Send, Bell,
-  FileSpreadsheet,
+  FileSpreadsheet, Calculator,
 };
 
 function CustomNode({ data, selected }: NodeProps) {

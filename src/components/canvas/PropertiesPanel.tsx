@@ -172,6 +172,12 @@ export default function PropertiesPanel() {
           { key: "operation", label: "Operation", type: "select", options: ["map", "filter", "forEach"] },
           { key: "expression", label: "Expression (use 'item')", type: "textarea" },
         ];
+      case "math-operation":
+        return [
+          { key: "operation", label: "Operations", type: "select", options: ["add", "subtract", "multiply", "divide", "modulo", "round", "floor", "ceil"]},
+          { key: "operand", label: "Operand", type: "number" },
+          { key: "path", label: "Path (dot notation, optional)", type: "text"}
+        ]
       case "condition":
         return [
           { key: "field", label: "Field Name", type: "text" },
