@@ -1,6 +1,75 @@
 import { Node, Edge } from "@xyflow/react";
 import { NodeData, ExecutionResult, StepExecution, ValidationResult, ValidationError } from "@/types";
 
+// ─── CSV Parser Helper ──────────────────────────────────────────
+export function parseCsv(
+  text: string,
+  options?: { delimiter?: string; hasHeader?: boolean; trimValues?: boolean }
+): Record<string, unknown>[] | string[][] {
+  if (!text || typeof text !== "string") return [];
+
+  const delimiter = options?.delimiter || ",";
+  const hasHeader = options?.hasHeader !== false;
+  const trimValues = options?.trimValues !== false;
+
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentVal = "";
+  let insideQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"') {
+      if (insideQuotes && nextChar === '"') {
+        currentVal += '"';
+        i++; // skip escaped quote
+      } else {
+        insideQuotes = !insideQuotes;
+      }
+    } else if (char === delimiter && !insideQuotes) {
+      currentRow.push(trimValues ? currentVal.trim() : currentVal);
+      currentVal = "";
+    } else if ((char === "\r" || char === "\n") && !insideQuotes) {
+      if (char === "\r" && nextChar === "\n") {
+        i++; // skip \r\n
+      }
+      currentRow.push(trimValues ? currentVal.trim() : currentVal);
+      currentVal = "";
+      if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== "")) {
+        rows.push(currentRow);
+      }
+      currentRow = [];
+    } else {
+      currentVal += char;
+    }
+  }
+
+  // Push remaining cell and row
+  currentRow.push(trimValues ? currentVal.trim() : currentVal);
+  if (currentRow.length > 1 || (currentRow.length === 1 && currentRow[0] !== "")) {
+    rows.push(currentRow);
+  }
+
+  if (rows.length === 0) return [];
+
+  if (!hasHeader) {
+    return rows;
+  }
+
+  const headers = rows[0].map((h, idx) => (h ? h : `col_${idx + 1}`));
+  const dataRows = rows.slice(1);
+
+  return dataRows.map((row) => {
+    const obj: Record<string, unknown> = {};
+    headers.forEach((header, index) => {
+      obj[header] = row[index] !== undefined ? row[index] : "";
+    });
+    return obj;
+  });
+}
+
 // ─── Execution Engine ─────────────────────────────────────────────
 export class FlowEngine {
   private results: Map<string, ExecutionResult> = new Map();
@@ -175,6 +244,32 @@ export class FlowEngine {
           } else {
             output = JSON.stringify(input, null, 2);
           }
+          break;
+        }
+
+        case "csv-to-json": {
+          let csvText = "";
+          if (config.path && typeof input === "object" && input !== null) {
+            const parts = (config.path as string).split(".");
+            let val: unknown = input;
+            for (const p of parts) {
+              if (val && typeof val === "object" && p in (val as Record<string, unknown>)) {
+                val = (val as Record<string, unknown>)[p];
+              } else {
+                val = "";
+                break;
+              }
+            }
+            csvText = typeof val === "string" ? val : String(val || "");
+          } else {
+            csvText = typeof input === "string" ? input : String(input || "");
+          }
+
+          const delimiter = (config.delimiter as string) || ",";
+          const hasHeader = config.hasHeader !== false;
+          const trimValues = config.trimValues !== false;
+
+          output = parseCsv(csvText, { delimiter, hasHeader, trimValues });
           break;
         }
 

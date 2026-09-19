@@ -86,6 +86,19 @@ export default function PropertiesPanel() {
           </div>
         );
 
+      case "boolean":
+        return (
+          <div key={key} className="flex items-center justify-between py-1">
+            <label className="text-[11px] text-gray-400 font-medium">{label}</label>
+            <input
+              type="checkbox"
+              checked={Boolean(value)}
+              onChange={(e) => updateConfig(key, e.target.checked)}
+              className="w-4 h-4 accent-[#8b5cf6] rounded cursor-pointer"
+            />
+          </div>
+        );
+
       default:
         return (
           <div key={key}>
@@ -136,6 +149,13 @@ export default function PropertiesPanel() {
         return [
           { key: "operation", label: "Operation", type: "select", options: ["parse", "stringify"] },
           { key: "path", label: "Extract Path (dot notation)", type: "text" },
+        ];
+      case "csv-to-json":
+        return [
+          { key: "delimiter", label: "Delimiter", type: "select", options: [",", ";", "\\t", "|"] },
+          { key: "hasHeader", label: "Has Header Row", type: "boolean" },
+          { key: "trimValues", label: "Trim Whitespace", type: "boolean" },
+          { key: "path", label: "CSV Field Path (optional)", type: "text" },
         ];
       case "text-formatter":
         return [

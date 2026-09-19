@@ -93,7 +93,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       ...connection,
       id: `e-${connection.source}-${connection.target}-${generateId()}`,
       animated: true,
-      style: { strokeWidth: 2 },
+      style: { strokeWidth: 2, stroke: "#6b7280" },
     };
     set({ edges: addEdge(edge, get().edges) });
   },
@@ -198,7 +198,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
       edges: flow.edges.map((e) => ({
         ...e,
         animated: true,
-        style: { strokeWidth: 2 },
+        style: { strokeWidth: 2, stroke: "#6b7280", ...e.style },
       })),
       executionResults: new Map(),
       stepResults: [],

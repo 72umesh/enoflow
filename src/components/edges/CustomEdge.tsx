@@ -29,7 +29,7 @@ function CustomEdge({
       <path
         id={id}
         className="fill-none"
-        style={style}
+        style={{ stroke: "#6b7280", ...style }}
         d={edgePath}
         markerEnd={markerEnd}
       />

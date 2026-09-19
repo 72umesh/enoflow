@@ -154,6 +154,23 @@ export const nodeDefinitions: NodeDefinition[] = [
       expression: "item.toUpperCase()",
     },
   },
+  {
+    type: "csv-to-json",
+    label: "CSV to JSON",
+    category: "transform",
+    description: "Convert CSV tabular text into an array of JSON objects",
+    icon: "FileSpreadsheet",
+    color: "#06b6d4",
+    inputs: 1,
+    outputs: 1,
+    defaultData: {
+      label: "CSV to JSON",
+      delimiter: ",",
+      hasHeader: true,
+      trimValues: true,
+      path: "",
+    },
+  },
 
   // ─── Conditions ────────────────────────────────────────────────
   {

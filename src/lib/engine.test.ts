@@ -284,3 +284,139 @@ describe("Condition branch pruning", () => {
     expect(results.get("join")?.output).toBe("no");
   });
 });
+
+describe("csv-to-json transform node", () => {
+  it("parses standard comma-separated values into array of objects with headers", async () => {
+    const csv = "name,age,city\nAlice,25,Jakarta\nBob,30,Bandung";
+    const nodes: Node<NodeData>[] = [
+      {
+        id: "t1",
+        position: { x: 0, y: 0 },
+        data: {
+          label: "CSV",
+          nodeType: "csv-to-json",
+          category: "transform",
+          config: { delimiter: ",", hasHeader: true, trimValues: true },
+        },
+      },
+    ];
+    const engine = new FlowEngine();
+    // @ts-expect-error testing private execution
+    const output = await engine.executeNode(nodes[0], csv);
+    expect(output).toEqual([
+      { name: "Alice", age: "25", city: "Jakarta" },
+      { name: "Bob", age: "30", city: "Bandung" },
+    ]);
+  });
+
+  it("handles quoted fields with commas and escaped quotes correctly", async () => {
+    const csv = 'product,description,price\nLaptop,"Powerful, sleek design",1500\nPhone,"6.5"" OLED, 128GB",800';
+    const nodes: Node<NodeData>[] = [
+      {
+        id: "t1",
+        position: { x: 0, y: 0 },
+        data: {
+          label: "CSV",
+          nodeType: "csv-to-json",
+          category: "transform",
+          config: { delimiter: ",", hasHeader: true, trimValues: true },
+        },
+      },
+    ];
+    const engine = new FlowEngine();
+    // @ts-expect-error testing private execution
+    const output = await engine.executeNode(nodes[0], csv);
+    expect(output).toEqual([
+      { product: "Laptop", description: "Powerful, sleek design", price: "1500" },
+      { product: "Phone", description: '6.5" OLED, 128GB', price: "800" },
+    ]);
+  });
+
+  it("handles custom delimiters such as semicolon and tab", async () => {
+    const csv = "id;name;role\n1;Admin;superadmin\n2;Guest;viewer";
+    const nodes: Node<NodeData>[] = [
+      {
+        id: "t1",
+        position: { x: 0, y: 0 },
+        data: {
+          label: "CSV",
+          nodeType: "csv-to-json",
+          category: "transform",
+          config: { delimiter: ";", hasHeader: true },
+        },
+      },
+    ];
+    const engine = new FlowEngine();
+    // @ts-expect-error testing private execution
+    const output = await engine.executeNode(nodes[0], csv);
+    expect(output).toEqual([
+      { id: "1", name: "Admin", role: "superadmin" },
+      { id: "2", name: "Guest", role: "viewer" },
+    ]);
+  });
+
+  it("returns 2D string array when hasHeader is false", async () => {
+    const csv = "a,b\nc,d";
+    const nodes: Node<NodeData>[] = [
+      {
+        id: "t1",
+        position: { x: 0, y: 0 },
+        data: {
+          label: "CSV",
+          nodeType: "csv-to-json",
+          category: "transform",
+          config: { delimiter: ",", hasHeader: false },
+        },
+      },
+    ];
+    const engine = new FlowEngine();
+    // @ts-expect-error testing private execution
+    const output = await engine.executeNode(nodes[0], csv);
+    expect(output).toEqual([
+      ["a", "b"],
+      ["c", "d"],
+    ]);
+  });
+
+  it("extracts CSV from object payload if path is configured", async () => {
+    const payload = { file: { content: "sku,qty\nA101,5\nB202,12" } };
+    const nodes: Node<NodeData>[] = [
+      {
+        id: "t1",
+        position: { x: 0, y: 0 },
+        data: {
+          label: "CSV",
+          nodeType: "csv-to-json",
+          category: "transform",
+          config: { path: "file.content", delimiter: ",", hasHeader: true },
+        },
+      },
+    ];
+    const engine = new FlowEngine();
+    // @ts-expect-error testing private execution
+    const output = await engine.executeNode(nodes[0], payload);
+    expect(output).toEqual([
+      { sku: "A101", qty: "5" },
+      { sku: "B202", qty: "12" },
+    ]);
+  });
+
+  it("handles empty or invalid inputs gracefully", async () => {
+    const nodes: Node<NodeData>[] = [
+      {
+        id: "t1",
+        position: { x: 0, y: 0 },
+        data: {
+          label: "CSV",
+          nodeType: "csv-to-json",
+          category: "transform",
+          config: {},
+        },
+      },
+    ];
+    const engine = new FlowEngine();
+    // @ts-expect-error testing private execution
+    const output = await engine.executeNode(nodes[0], "");
+    expect(output).toEqual([]);
+  });
+});

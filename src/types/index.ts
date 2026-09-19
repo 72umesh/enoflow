@@ -54,6 +54,7 @@ export interface SerializedEdge {
   targetHandle?: string;
   animated?: boolean;
   label?: string;
+  style?: Record<string, unknown>;
 }
 
 // ─── Execution Types ───────────────────────────────────────────────

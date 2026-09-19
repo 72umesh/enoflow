@@ -5,15 +5,15 @@ import { useRouter } from "next/navigation";
 import {
   ReactFlow,
   Background,
-  Controls,
   MiniMap,
   BackgroundVariant,
   useReactFlow,
+  useViewport,
   ReactFlowProvider,
   Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Sparkles, Play } from "lucide-react";
+import { Sparkles, Play, Plus, Minus, Maximize2 } from "lucide-react";
 
 import { useFlowStore } from "@/lib/store";
 import { nodeDefinitionMap } from "@/lib/node-definitions";
@@ -26,6 +26,55 @@ const nodeTypes = { custom: CustomNode };
 const edgeTypes = { custom: CustomEdge };
 
 const triggerDef = nodeDefinitionMap["manual-trigger"];
+
+function CanvasZoomToolbar() {
+  const { zoomIn, zoomOut, zoomTo, fitView } = useReactFlow();
+  const { zoom } = useViewport();
+  const zoomPercent = Math.round(zoom * 100);
+
+  return (
+    <div className="absolute bottom-4 left-4 z-10 flex items-center bg-[#1e1e2e]/95 border border-[#313244] rounded-lg shadow-xl backdrop-blur p-1 gap-0.5 text-white">
+      <button
+        onClick={() => zoomOut()}
+        className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#313244] text-gray-400 hover:text-white transition-colors"
+        title="Zoom Out"
+        type="button"
+      >
+        <Minus className="w-3.5 h-3.5" />
+      </button>
+
+      <button
+        onClick={() => zoomTo(1)}
+        className="px-2 h-7 flex items-center justify-center rounded hover:bg-[#313244] text-[11px] font-medium text-gray-300 hover:text-white transition-colors font-mono min-w-[48px]"
+        title="Reset Zoom to 100%"
+        type="button"
+      >
+        {zoomPercent}%
+      </button>
+
+      <button
+        onClick={() => zoomIn()}
+        className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#313244] text-gray-400 hover:text-white transition-colors"
+        title="Zoom In"
+        type="button"
+      >
+        <Plus className="w-3.5 h-3.5" />
+      </button>
+
+      <div className="w-px h-4 bg-[#313244] mx-1" />
+
+      <button
+        onClick={() => fitView({ padding: 0.2 })}
+        className="px-2 h-7 flex items-center gap-1 rounded hover:bg-[#313244] text-[11px] text-gray-400 hover:text-white transition-colors"
+        title="Fit All Nodes"
+        type="button"
+      >
+        <Maximize2 className="w-3 h-3" />
+        <span className="text-[10px] hidden sm:inline">Fit View</span>
+      </button>
+    </div>
+  );
+}
 
 function FlowCanvasInner() {
   const {
@@ -160,10 +209,6 @@ function FlowCanvasInner() {
           size={1}
           color="#313244"
         />
-        <Controls
-          className="!bg-[#1e1e2e] !border-[#313244] !shadow-lg !rounded-lg"
-          showInteractive={false}
-        />
         <MiniMap
           className="!bg-[#181825] !border-[#313244]"
           nodeColor={(node) => {
@@ -175,6 +220,8 @@ function FlowCanvasInner() {
           style={{ background: "#181825" }}
         />
       </ReactFlow>
+
+      <CanvasZoomToolbar />
 
       {nodes.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
